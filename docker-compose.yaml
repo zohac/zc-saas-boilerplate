@@ -1,0 +1,44 @@
+services:
+  api:
+    build:
+      context: .
+      target: production # Cible l'étape de production du Dockerfile
+    container_name: zc_saas_api_prod # Nom clair pour le conteneur
+    env_file:
+      - .env # Charge les variables depuis le fichier .env
+    environment:
+      # Surcharge spécifique si nécessaire pour l'environnement Docker prod
+      # NODE_ENV: production # Déjà dans .env probablement
+      DB_HOST: db # Important: L'API doit contacter le service 'db'
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}" # Mappe le port de l'hôte vers le conteneur
+    depends_on:
+      db:
+        condition: service_healthy # Attend que la BDD soit prête
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine # Image PostgreSQL légère
+    container_name: zc_saas_db
+    env_file:
+      - .env # Charge les variables depuis .env (POSTGRES_USER, etc.)
+    environment:
+      # Assurez-vous que ces variables correspondent à celles dans .env pour l'API
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persistance des données
+    ports:
+      # Optionnel: Exposer le port de la BDD sur l'hôte (sur un port différent de 5432 si utilisé localement)
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  postgres_data: # Déclare le volume nommé pour la persistance BDD

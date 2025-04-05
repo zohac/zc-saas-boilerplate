@@ -1,0 +1,30 @@
+services:
+  api:
+    build:
+      context: .
+      target: development # Cible l'étape de développement du Dockerfile
+    container_name: zc_saas_api_dev
+    volumes:
+      # Monte le code source local dans le conteneur pour le hot-reload
+      # ATTENTION: Ne PAS monter node_modules, le conteneur gère les siens.
+      - ./src:/usr/src/app/src
+      # Monter d'autres fichiers/dossiers si nécessaire (ex: tsconfig.json si modifié souvent)
+      - ./tsconfig.json:/usr/src/app/tsconfig.json
+      - ./tsconfig.build.json:/usr/src/app/tsconfig.build.json
+      # Explicitement déclarer un volume pour node_modules pour éviter l'écrasement par le host
+      - /usr/src/app/node_modules
+    environment:
+      NODE_ENV: development
+      # Assurez-vous que DB_HOST pointe vers le service 'db' même en dev
+      DB_HOST: db
+    # La commande est déjà définie dans l'étape 'development' du Dockerfile,
+    # mais on peut la surcharger explicitement ici si besoin :
+    # command: pnpm run start:dev
+    depends_on:
+      db:
+        condition: service_started # En dev, on peut être moins strict qu'en prod
+
+# Le service 'db' n'est plus listé ici. Docker utilisera la définition
+# du fichier docker-compose.yml principal.
+
+# Les volumes ne sont pas redéfinis ici non plus.
