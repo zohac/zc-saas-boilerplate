@@ -2,6 +2,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter } from "./shared/common/filters/http-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -25,6 +26,11 @@ async function bootstrap() {
 
   // Add "/api" before all routes
   app.setGlobalPrefix('api');
+
+  // --- Enregistrer le filtre d'exception global ---
+  app.useGlobalFilters(new HttpExceptionFilter());
+
+  // --- Swagger (sera configuré plus tard) ---
 
   await app.listen(port);
 }
