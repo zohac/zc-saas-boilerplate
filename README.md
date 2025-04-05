@@ -2,40 +2,48 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- Ajoutez d'autres badges ici si nécessaire (Build Status, Coverage, etc.) -->
-<!-- [![Build Status](https://travis-ci.org/your-username/zc-saas-boilerplate.svg?branch=main)](https://travis-ci.org/your-username/zc-saas-boilerplate) -->
-<!-- [![Coverage Status](https://coveralls.io/repos/github/your-username/zc-saas-boilerplate/badge.svg?branch=main)](https://coveralls.io/github/your-username/zc-saas-boilerplate?branch=main) -->
+<!-- [![Build Status](https://github.com/zohac/zc-saas-boilerplate/actions/workflows/...)](...) -->
+<!-- [![Coverage Status](https://coveralls.io/repos/github/zohac/zc-saas-boilerplate/badge.svg?branch=main)](...) -->
 
-Un boilerplate robuste et bien structuré construit avec **NestJS** pour démarrer rapidement le développement d'applications SaaS (Software as a Service). Ce projet met l'accent sur la **Clean Architecture**, la **testabilité**, et inclut des fonctionnalités communes prêtes à l'emploi ou facilement extensibles.
+Un boilerplate robuste et bien structuré construit avec **NestJS** pour démarrer rapidement le développement
+d'applications SaaS (Software as a Service). Ce projet met l'accent sur la **Clean Architecture**, la **testabilité**,
+et inclut des fonctionnalités communes prêtes à l'emploi ou facilement extensibles via un environnement **Dockerisé**.
 
 ## ✨ Fonctionnalités Principales
 
 *   **Fondation NestJS :** Utilise le framework Node.js moderne et puissant NestJS.
 *   **TypeScript :** Typage statique pour une meilleure maintenabilité et productivité.
 *   **Clean Architecture :** Structure de projet organisée (Domain, Application, Infrastructure, Presentation) pour une séparation claire des préoccupations.
-*   **Gestion de la Configuration :** Intégration de `@nestjs/config` avec support des fichiers `.env` et validation optionnelle.
-*   **Base de Données (TypeORM & PostgreSQL) :** Intégration de TypeORM avec PostgreSQL, configuration prête pour les migrations.
-*   **Authentification (Auth) :** Module d'authentification complet avec stratégies `local` (email/mot de passe) et `JWT` (JSON Web Tokens). Inclut le hachage de mot de passe (`bcrypt`).
-*   **Gestion Utilisateur (User) :** Module de base pour la gestion des utilisateurs (CRUD).
-*   **Validation des Données :** Utilisation de `class-validator` et `class-transformer` avec un `ValidationPipe` global.
-*   **Gestion Globale des Erreurs :** Filtre d'exception HTTP personnalisé pour des réponses d'erreur cohérentes.
-*   **Sécurité de Base :** Configuration de `Helmet`, `CORS`, et `Throttler` (Rate Limiting).
-*   **Documentation API (Swagger) :** Intégration de `@nestjs/swagger` pour une documentation API auto-générée et interactive.
+* **Gestion de la Configuration :** Intégration de `@nestjs/config` avec support des fichiers `.env` (via `.env.dist`
+  comme template) et validation optionnelle.
+* **Base de Données (TypeORM & PostgreSQL) :** Intégration de TypeORM avec PostgreSQL, configuration pour la CLI et les
+  migrations prête à l'emploi.
+* **Authentification (Auth) :** (Prévu) Module d'authentification complet avec stratégies `local` (email/mot de passe)
+  et `JWT`.
+* **Gestion Utilisateur (User) :** (Prévu) Module de base pour la gestion des utilisateurs (CRUD).
+* **Validation des Données :** (Prévu) Utilisation de `class-validator` et `class-transformer` avec un `ValidationPipe`
+  global.
+* **Gestion Globale des Erreurs :** (Prévu) Filtre d'exception HTTP personnalisé pour des réponses d'erreur cohérentes.
+* **Sécurité de Base :** (Prévu) Configuration de `Helmet`, `CORS`, et `Throttler`.
+* **Documentation API (Swagger) :** (Prévu) Intégration de `@nestjs/swagger` pour une documentation API auto-générée.
 *   **Outillage (Linting & Formatting) :** Configuration d'ESLint et Prettier pour un code propre et cohérent.
-*   **Dockerisation :** `Dockerfile` et `docker-compose.yml` pour un développement et un déploiement facilités (App + DB PostgreSQL).
-*   **Tests :** Structure de base pour les tests unitaires et E2E avec Jest.
+* **Dockerisation :** `Dockerfile` multi-étapes (Dev/Prod) et `docker-compose.yml`/`docker-compose.override.yml` pour un
+  environnement de développement complet et cohérent (App + DB PostgreSQL).
+* **Tests :** (Prévu) Structure de base pour les tests unitaires et E2E avec Jest.
 *   **(Prévu) Concepts SaaS :** Structure prête à accueillir des modules pour les Organisations, Membres, Abonnements, Invitations, etc.
 
 ## 🚀 Technologie
 
-*   **Framework :** [NestJS](https://nestjs.com/) (^Version utilisée, e.g., ^10.0.0)
-*   **Langage :** [TypeScript](https://www.typescriptlang.org/) (^Version utilisée, e.g., ^5.0.0)
+* **Framework :** [NestJS](https://nestjs.com/) (^10.0.0)
+* **Langage :** [TypeScript](https://www.typescriptlang.org/) (^5.1.3)
+* **Gestionnaire de Paquets :** [pnpm](https://pnpm.io/fr/)
 *   **ORM :** [TypeORM](https://typeorm.io/)
-*   **Base de Données :** [PostgreSQL](https://www.postgresql.org/)
-*   **Authentification :** [PassportJS](http://www.passportjs.org/) (`passport-local`, `passport-jwt`), `@nestjs/jwt`
-*   **Validation :** `class-validator`, `class-transformer`
+* **Base de Données :** [PostgreSQL](https://www.postgresql.org/) (Image Docker `postgres:15-alpine`)
+* **Authentification :** (Prévu) [PassportJS](http://www.passportjs.org/), `@nestjs/jwt`, `bcrypt`
+* **Validation :** (Prévu) `class-validator`, `class-transformer`
 *   **Configuration :** `@nestjs/config`
-*   **Tests :** [Jest](https://jestjs.io/)
-*   **API Docs :** `@nestjs/swagger`
+* **Tests :** (Prévu) [Jest](https://jestjs.io/)
+* **API Docs :** (Prévu) `@nestjs/swagger`
 *   **Conteneurisation :** [Docker](https://www.docker.com/), Docker Compose
 *   **Linting/Formatting :** [ESLint](https://eslint.org/), [Prettier](https://prettier.io/)
 
@@ -43,34 +51,40 @@ Un boilerplate robuste et bien structuré construit avec **NestJS** pour démarr
 
 Ce projet suit les principes de la **Clean Architecture** pour séparer les différentes couches logiques de l'application :
 
-1.  **Domain :** Contient la logique métier principale, les entités de domaine (interfaces ou classes simples) et les interfaces des dépôts (repositories). N'a aucune dépendance externe.
-2.  **Application :** Orchestre les cas d'utilisation (Use Cases) de l'application. Contient les DTOs (Data Transfer Objects), les interfaces de services externes (ports), et dépend du Domain.
-3.  **Infrastructure :** Implémente les détails techniques comme l'accès à la base de données (implémentation des repositories via TypeORM), les services externes (JWT, Email, etc.), l'ORM (Entités TypeORM). Dépend de l'Application (implémente ses interfaces) et du Domain.
-4.  **Presentation :** Point d'entrée de l'application (ex: API REST). Contient les Contrôleurs, les Guards, les Pipes, etc. Dépend de l'Application (utilise les Use Cases).
+1. **Domain :** Contient la logique métier principale, les entités de domaine et les interfaces des dépôts. N'a aucune
+   dépendance externe.
+2. **Application :** Orchestre les cas d'utilisation (Use Cases), contient les DTOs, les interfaces de services
+   externes (ports). Dépend du Domain.
+3. **Infrastructure :** Implémente les détails techniques : accès BDD (Repositories TypeORM), services externes (JWT,
+   Email), ORM (Entités TypeORM). Dépend de l'Application et du Domain. *Contient `data-source.ts` pour la config CLI
+   TypeORM.*
+4. **Presentation :** Point d'entrée (API REST) : Contrôleurs, Guards, Pipes. Dépend de l'Application.
 
-*Voir `src/` pour la structure des dossiers implémentant cette architecture.*
+*Voir `src/` pour la structure des dossiers. Un diagramme peut être ajouté ici.*
 <!-- [Lien vers un diagramme d'architecture si disponible] -->
 
-## 🏁 Démarrage Rapide
+## 🏁 Démarrage Rapide (via Docker - Recommandé)
+
+L'environnement de développement principal est géré par Docker Compose.
 
 ### Prérequis
 
-*   [Node.js](https://nodejs.org/) (Version LTS recommandée, v20.12.0)
-*   [pnpm](https://pnpm.io/fr/)
+* [Node.js](https://nodejs.org/) (Version LTS v20.12.0 ou supérieure - principalement pour `pnpm`)
+* [pnpm](https://pnpm.io/fr/installation)
 *   [Git](https://git-scm.com/)
-*   [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/) (pour l'environnement de développement basé sur Docker)
-*   Une instance PostgreSQL (si vous ne lancez pas via Docker)
+* [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
 ### Installation
 
 1.  **Cloner (ou Forker) le dépôt :**
     ```bash
-    git clone https://github.com/votre-username/zc-saas-boilerplate.git
+    git clone https://github.com/zohac/zc-saas-boilerplate.git
     cd zc-saas-boilerplate
     ```
-    *(Voir la section "Utiliser ce Boilerplate" pour l'approche recommandée avec Fork + Upstream)*
+    *(Voir la section "Utiliser ce Boilerplate" pour l'approche avec Fork + Upstream)*
 
-2.  **Installer les dépendances :**
+2. **Installer les dépendances (pour l'outillage local comme ESLint/Prettier) :**
+   *Bien que l'application tourne dans Docker, `pnpm install` localement est utile pour les outils de dev.*
     ```bash
     pnpm install
     ```
@@ -84,104 +98,124 @@ Ce projet suit les principes de la **Clean Architecture** pour séparer les diff
     ```
 
 2.  **Configurer les variables d'environnement :**
-    Ouvrez le fichier `.env` et modifiez les valeurs selon votre environnement local, notamment pour la base de données et les secrets JWT.
+    Ouvrez le fichier `.env` et modifiez les valeurs. **Important pour Docker :**
+    * `DB_HOST=db` (ou le nom du service DB dans `docker-compose.yml`)
+    * Renseignez `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE` (ces valeurs seront utilisées pour créer la base de données
+      dans le conteneur Docker).
+    * Configurez `JWT_SECRET` avec une clé forte.
+    * Ajustez `PORT` si nécessaire (ex: `PORT=3001` si 3000 est déjà pris).
 
     ```dotenv
-    # Application
+    # .env (Exemple après copie et modification)
     NODE_ENV=development
     PORT=3000
 
-    # Database (PostgreSQL)
-    DB_HOST=localhost # ou le nom du service docker si vous utilisez docker-compose (e.g., postgres_db)
+    DB_HOST=db
     DB_PORT=5432
-    DB_USERNAME=votre_user_pg
-    DB_PASSWORD=votre_mot_de_passe_pg
-    DB_DATABASE=votre_nom_db_pg
+    DB_USERNAME=saas_user
+    DB_PASSWORD=super_secret_password
+    DB_DATABASE=saas_db
 
-    # JWT
-    JWT_SECRET=VOTRE_SECRET_JWT_TRES_FORT # Changez ceci !
-    JWT_EXPIRATION_TIME=3600s # Ex: 1 heure
-
-    # Autres configurations (Mailer, Redis, etc. à ajouter si nécessaire)
-    # ...
+    JWT_SECRET=generate_a_very_strong_secret_here
+    JWT_EXPIRATION_TIME=3600s
     ```
 
-### Lancement de l'Application
+### Lancement et Opérations Courantes (via Docker Compose)
 
-#### Option 1 : Localement (Nécessite une base de données PostgreSQL en cours d'exécution séparément)
+1. **Lancer les services (Application + Base de données) :**
+   *Depuis la racine du projet.*
+   ```bash
+   docker compose up --build -d
+   ```
+    * `--build` : Reconstruit les images si le `Dockerfile` ou le contexte a changé (obligatoire la première fois ou
+      après ajout/màj de dépendances).
+    * `-d` : Lance les conteneurs en arrière-plan (detached mode).
+      *Pour voir les logs : `docker compose logs -f api` (remplacez `api` par le nom du service si différent).*
 
-1.  **Assurez-vous que votre instance PostgreSQL est lancée et accessible** avec les informations fournies dans `.env`.
-
-2.  **Exécuter les migrations (première fois ou après des changements de modèle) :**
+2. **Exécuter les migrations de base de données :**
+   *(Nécessaire la première fois et après chaque nouvelle migration générée).*
     ```bash
-    pnpm run migration:run
+    docker compose exec api pnpm run migration:run
     ```
 
-3.  **Démarrer le serveur de développement :**
+3. **Accéder à l'application :**
+   L'application est maintenant disponible sur `http://localhost:PORT` (ex: `http://localhost:3000` si `PORT=3000`). La
+   route `/` renverra 404 (normal), testez les routes spécifiques de vos modules (ex: `/users`, `/auth`, `/api` pour
+   Swagger).
+
+4. **Arrêter les services :**
     ```bash
-    pnpm run start:dev
+    docker compose down
     ```
-    L'application sera disponible sur `http://localhost:PORT` (par défaut `http://localhost:3000`).
+   *Pour supprimer aussi les volumes (données de la BDD), ajoutez `-v` : `docker compose down -v`.*
 
-#### Option 2 : Avec Docker Compose (Recommandé pour un environnement de développement cohérent)
+### Gestion des Dépendances (avec Docker)
 
-1.  **Assurez-vous que Docker est en cours d'exécution.**
-
-2.  **Mettez à jour `DB_HOST` dans `.env` :**
-    Changez `DB_HOST=localhost` par `DB_HOST=postgres_db` (ou le nom que vous avez donné au service de base de données dans `docker-compose.yml`).
-
-3.  **Lancer les services (Application + Base de données) :**
+1. **Ajouter une dépendance :**
     ```bash
-    docker-compose up --build
+    # 1. Ajouter sur l'hôte (met à jour package.json/pnpm-lock.yaml)
+    pnpm add nom-du-paquet
+    # 2. Reconstruire l'image et relancer
+    docker compose up --build -d --force-recreate api
     ```
-    *(Le `--build` n'est nécessaire que la première fois ou si vous modifiez le Dockerfile ou les dépendances).*
 
-4.  **Dans un autre terminal (pendant que `docker-compose up` est en cours d'exécution), exécutez les migrations DANS le conteneur :**
+2. **Mettre à jour les dépendances :**
     ```bash
-    docker-compose exec api npm run migration:run
+    # 1. Mettre à jour sur l'hôte
+    pnpm up # Ou pnpm up -i (interactif) / pnpm up -L (vers latest, attention)
+    # 2. Reconstruire l'image et relancer
+    docker compose up --build -d --force-recreate api
     ```
-    *(Remplacez `api` par le nom du service de votre application dans `docker-compose.yml` si différent)*.
 
-    L'application sera disponible sur `http://localhost:PORT` (par défaut `http://localhost:3000`) et connectée à la base de données Dockerisée.
+### Migrations de Base de Données (Commandes Docker)
 
-### Migrations de Base de Données (TypeORM)
+*Toutes ces commandes s'exécutent via `docker compose exec` pour agir à l'intérieur du conteneur `api`.*
 
-*   **Générer une nouvelle migration après des changements dans les entités :**
+* **Générer une nouvelle migration :**
+  *(Après avoir modifié des entités TypeORM)*
     ```bash
     # Remplacez 'NomDeLaMigration' par un nom descriptif (ex: CreateUserTable)
-    pnpm run migration:generate --name=NomDeLaMigration
+    docker compose exec api pnpm run migration:generate --name=NomDeLaMigration
     ```
-    Vérifiez le fichier de migration généré dans `src/database/migrations`.
+  *Le fichier sera créé dans `src/database/migrations` sur votre machine hôte (via le volume monté).*
 
 *   **Exécuter les migrations en attente :**
     ```bash
-    pnpm run migration:run
+    docker compose exec api pnpm run migration:run
     ```
 
 *   **Annuler la dernière migration exécutée :**
     ```bash
-    pnpm run migration:revert
+    docker compose exec api pnpm run migration:revert
     ```
 
-### Tests
+* **Voir le statut des migrations :**
+  ```bash
+  docker compose exec api pnpm run migration:show
+  ```
+
+### Tests (Commandes Docker)
 
 *   **Exécuter tous les tests unitaires :**
     ```bash
-    pnpm run test
+    docker compose exec api pnpm run test
     ```
 
 *   **Exécuter tous les tests End-to-End (E2E) :**
-    *(Nécessite une base de données configurée et potentiellement en cours d'exécution)*
+    *(Nécessite que les conteneurs `api` et `db` soient démarrés).*
     ```bash
-    pnpm run test:e2e
+    docker compose exec api pnpm run test:e2e
     ```
 
-*   **Exécuter tous les tests avec couverture :**
+* **Exécuter les tests unitaires avec couverture :**
     ```bash
-    pnpm run test:cov
+    docker compose exec api pnpm run test:cov
     ```
 
-### Linting et Formatage
+### Linting et Formatage (Commandes locales)
+
+Ces commandes peuvent être exécutées localement car elles agissent sur les fichiers sources sur votre machine hôte (
+assurez-vous d'avoir fait `pnpm install` localement).
 
 *   **Vérifier les erreurs de linting :**
     ```bash
@@ -195,106 +229,86 @@ Ce projet suit les principes de la **Clean Architecture** pour séparer les diff
 
 ### Documentation API (Swagger)
 
-Une fois l'application lancée (localement ou via Docker), la documentation Swagger UI est généralement disponible à l'adresse :
-
-`http://localhost:PORT/api` (par défaut `http://localhost:3000/api`)
-
-Cette interface vous permet d'explorer et d'interagir avec les endpoints de l'API.
+*(Sera disponible une fois le TICKET-26 implémenté)*
+Une fois l'application lancée, la documentation Swagger UI sera typiquement disponible à l'adresse :
+`http://localhost:PORT/api` (ex: `http://localhost:3000/api`)
 
 ## 🏗️ Structure du Projet (Aperçu)
 ```bash
 zc-saas-boilerplate/
-├── dist/ # Code compilé (utilisé en production)
-├── node_modules/ # Dépendances
+├── dist/ # Code compilé (utilisé en prod et pour l'exécution)
+├── node_modules/ # Dépendances (gérées par pnpm)
 ├── src/ # Code source de l'application
 │   ├── app.module.ts # Module racine
 │   ├── main.ts # Point d'entrée de l'application
-│   ├── config/ # Configuration de l'application (env validation, etc.)
-│   ├── database/ # Configuration BDD, migrations, seeds (optionnel)
-│   ├── shared/ # Code partagé (communs, filtres, pipes, décorateurs...)
-│   │   ├── common/
-│   │   └── core/
-│   ├── auth/ # Module d'Authentification
-│   │   ├── domain/
-│   │   ├── application/
-│   │   ├── infrastructure/
-│   │   └── presentation/ (controllers, guards)
-│   ├── user/ # Module Utilisateur
-│   │   ├── domain/
-│   │   ├── application/
-│   │   ├── infrastructure/
-│   │   └── presentation/ (controllers)
-│   ├── organization/ # (Futur) Module Organisation/Tenant
-│   │   └── ...
+│   ├── infrastructure/ # Couche Infrastructure
+│   │   ├── database/ # Code lié à la BDD (Repositories, Entities ORM, data-source.ts)
+│   │   ├── migrations/ # Contient les migrations générées
+│   │   └── ... # Autres services infra (JWT, Mailer...)
+│   ├── shared/ # Code partagé (common, core, décorateurs...)
+│   ├── auth/ # (Prévu) Module d'Authentification (structure Clean Arch)
+│   ├── user/ # (Prévu) Module Utilisateur (structure Clean Arch)
 │   └── ... # Autres modules métier
 ├── test/ # Tests E2E
 ├── .env.example # Fichier d'exemple pour les variables d'environnement
+├── .dockerignore
 ├── .eslintrc.js
 ├── .gitignore
 ├── .prettierrc
-├── docker-compose.yml
-├── Dockerfile
+├── docker-compose.override.yml # Surcharges Docker Compose pour le développement
+├── docker-compose.yml # Configuration Docker Compose de base/production
+├── Dockerfile # Instructions pour construire l'image Docker
 ├── nest-cli.json
 ├── package.json
+├── pnpm-lock.yaml # Lockfile pnpm
 ├── README.md # Vous êtes ici !
+├── tsconfig.build.json
 └── tsconfig.json
-└── tsconfig.build.json
 ```
+
 
 ## 🔑 Modules Clés (Implémentés / Prévus)
 
-*   **AppModule :** Module racine, assemble l'application.
-*   **ConfigModule :** Chargement et validation de la configuration.
-*   **DatabaseModule (via TypeOrmModule) :** Connexion et gestion de la base de données.
-*   **UserModule :** Gestion des entités Utilisateur.
-*   **AuthModule :** Authentification (login, protection des routes via JWT).
-*   **(Prévu) OrganizationModule / TenantModule :** Gestion des comptes clients / locataires.
-*   **(Prévu) MembershipModule :** Liaison Utilisateurs <-> Organisations avec rôles.
-*   **(Prévu) BillingModule / SubscriptionModule :** Gestion des plans et abonnements.
+* **AppModule :** Module racine.
+* **ConfigModule :** Chargement et accès à la configuration `.env`.
+* **TypeOrmModule :** Connexion BDD et gestion des entités.
+* **(Prévu) UserModule :** Gestion des utilisateurs.
+* **(Prévu) AuthModule :** Authentification et autorisation.
+* **(Prévu) OrganizationModule :** Gestion des comptes clients/tenants.
+* **(Prévu) MembershipModule :** Gestion des membres d'organisations.
+* **(Prévu) Billing/SubscriptionModule :** Gestion des abonnements/paiements.
 
 ## 💡 Utiliser ce Boilerplate pour Votre Projet
 
-L'approche recommandée est d'utiliser ce dépôt comme point de départ en le **forkant**. Cela vous permet de bénéficier des mises à jour futures du boilerplate tout en développant votre propre application.
+L'approche recommandée est d'utiliser ce dépôt comme point de départ en le **forkant**.
 
-1.  **Forkez** ce dépôt sur GitHub.
-2.  **Clonez votre fork** sur votre machine locale :
+1. **Forkez** `https://github.com/zohac/zc-saas-boilerplate.git` sur GitHub.
+2. **Clonez votre fork** localement :
     ```bash
-    git clone https://github.com/zohac/zc-saas-boilerplate.git mon-nouveau-projet
+    git clone https://github.com/VOTRE_USERNAME/zc-saas-boilerplate.git mon-nouveau-projet
     cd mon-nouveau-projet
     ```
-3.  **(Optionnel mais Recommandé) Configurez le dépôt original comme "upstream" :**
+3. **(Recommandé) Configurez l'original comme "upstream" :**
     ```bash
     git remote add upstream https://github.com/zohac/zc-saas-boilerplate.git
     ```
-    
-4.  **Développez votre application** sur votre fork.
-
-5.  **Pour récupérer les mises à jour du boilerplate (si nécessaire) :**
+4. **Développez** votre application.
+5. **Récupérer les mises à jour du boilerplate (occasionnellement) :**
     ```bash
-    # Récupérer les changements de l'upstream
     git fetch upstream
-
-    # Fusionner les changements de la branche principale de l'upstream dans votre branche actuelle
-    # (Résolvez les conflits si nécessaire)
-    git merge upstream/main
-    # OU utiliser rebase (attention si vous avez déjà pushé vos changements)
-    # git rebase upstream/main
+    git merge upstream/main # Ou rebase, résolvez les conflits
     ```
 
 ## 🙌 Contribution
 
-Les contributions sont les bienvenues ! Si vous souhaitez améliorer ce boilerplate :
+Les contributions pour améliorer ce boilerplate sont les bienvenues !
 
-1.  Forkez le dépôt.
-2.  Créez une nouvelle branche (`git checkout -b feature/ma-nouvelle-feature`).
-3.  Commitez vos changements (`git commit -am 'feat: Ajout de ma feature'`).
-4.  Poussez vers la branche (`git push origin feature/ma-nouvelle-feature`).
-5.  Ouvrez une Pull Request.
-
-Veuillez suivre les conventions de code et ajouter des tests si pertinent.
-
-<!-- [Lien vers des directives de contribution plus détaillées si nécessaire] -->
+1. Forkez le dépôt original (`zohac/zc-saas-boilerplate`).
+2. Créez une branche (`git checkout -b feature/nom-feature`).
+3. Commitez vos changements (`git commit -am 'feat: Mon amélioration'`).
+4. Poussez vers votre fork (`git push origin feature/nom-feature`).
+5. Ouvrez une Pull Request vers la branche `main` du dépôt original.
 
 ## 📄 License
 
-Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` (à ajouter si absent) pour plus de détails.
