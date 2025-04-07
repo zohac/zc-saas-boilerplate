@@ -89,6 +89,10 @@ import { UserController } from './presentation/controllers/user.controller';
     },
     // Potentiellement utile si Auth doit vérifier un email
     // USER_REPOSITORY, // Ou juste le token
+    {
+      provide: USER_REPOSITORY,
+      useClass: UserRepository,
+    }
   ],
 })
 export class UserModule {
