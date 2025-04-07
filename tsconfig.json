@@ -17,6 +17,9 @@
       "@user/*": [
         "src/user/*"
       ],
+      "@auth/*": [
+        "src/auth/*"
+      ],
       "@/*": [
         "src/*"
       ]
