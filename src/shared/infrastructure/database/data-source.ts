@@ -1,3 +1,5 @@
+// src/shared/infrastructure/database/data-source.ts
+
 import 'dotenv/config'; // Charge les variables .env directement au chargement du fichier
 import * as path from 'path';
 import { DataSource, DataSourceOptions } from 'typeorm';
@@ -19,7 +21,7 @@ const baseOptions: Partial<DataSourceOptions> = {
 export const dataSourceOptions: DataSourceOptions = {
   ...baseOptions,
   // IMPORTANT: Pointe vers les fichiers JS compilés pour les entités et migrations
-  entities: [path.join(__dirname, '/../**/*.entity{.js,.ts}')], // Accepte ts pour la génération, js pour l'exécution
+  entities: [path.join(__dirname, '/../../../**/*.entity{.js,.ts}')], // Accepte ts pour la génération, js pour l'exécution
   migrations: [path.join(__dirname, '/migrations/*{.js,.ts}')], // Accepte ts pour la génération, js pour l'exécution
 } as DataSourceOptions; // Cast explicite si nécessaire
 
