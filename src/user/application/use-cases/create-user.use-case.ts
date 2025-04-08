@@ -20,7 +20,8 @@ export class CreateUserUseCase {
 
   async execute(createUserDto: CreateUserDto): Promise<User> {
     // 1. Vérifier si l'utilisateur existe déjà
-    const existingUser = await this.userRepository.findByEmail(createUserDto.email);
+    const existingUser = await this.userRepository.findByEmail(createUserDto.email, true);
+    console.log('merde : ', existingUser)
     if (existingUser) {
       throw new ConflictException(`Un utilisateur avec l'email ${createUserDto.email} existe déjà.`);
     }
@@ -38,8 +39,8 @@ export class CreateUserUseCase {
       passwordHash: hashedPassword, // <-- Utiliser le hash généré
       givenName: createUserDto.givenName,
       familyName: createUserDto.familyName,
-      telephone: createUserDto.telephone || null,
-      imageUrl: createUserDto.imageUrl || null,
+      telephone: createUserDto.telephone ?? null,
+      imageUrl: createUserDto.imageUrl ?? null,
       isActive: true,
       createdAt: new Date(),
       updatedAt: new Date(),

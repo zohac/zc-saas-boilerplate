@@ -24,9 +24,10 @@ export interface IUserRepository {
   /**
    * Finds a user by their email address.
    * @param email The email address to search for.
+   * @param includeDeleted
    * @returns A promise resolving to the User entity or null if not found.
    */
-  findByEmail(email: string): Promise<User | null>;
+  findByEmail(email: string, includeDeleted?: boolean): Promise<User | null>;
 
   /**
    * Deletes a user by their unique identifier.
