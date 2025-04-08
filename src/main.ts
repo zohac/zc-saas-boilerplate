@@ -1,12 +1,13 @@
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { AllExceptionsFilter } from "@shared/common/filters/all-exceptions.filter";
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from "./shared/common/filters/http-exception.filter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+// --- Obtenir l'instance HttpAdapterHost ---
+  const httpAdapterHost = app.get(HttpAdapterHost);
   // --- Récupérer ConfigService (possible car ConfigModule est global) ---
   const configService = app.get(ConfigService);
 
@@ -28,7 +29,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // --- Enregistrer le filtre d'exception global ---
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
 
   // --- Swagger (sera configuré plus tard) ---
 

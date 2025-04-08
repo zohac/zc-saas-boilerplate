@@ -1,7 +1,7 @@
 // src/user/infrastructure/repositories/user.repository.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, IsNull, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../../domain/user';
 import { IUserRepository } from '../../domain/user.repository.interface';
 import { UserMapper } from '../mappers/user.mapper';
@@ -33,14 +33,11 @@ export class UserRepository implements IUserRepository {
   }
 
   async findByEmail(email: string, includeDeleted = false): Promise<User | null> {
-    const whereClause: FindOptionsWhere<UserEntity> = {email: email};
-    if (!includeDeleted) {
-      whereClause.deletedAt = IsNull(); // Utiliser IsNull() de TypeORM
-    }
-    // Alternativement, si TypeORM gère bien undefined pour IS NULL:
-    // const whereClause = { email: email, deletedAt: includeDeleted ? undefined : IsNull() };
+    const ormEntity = await this.ormRepository.findOne({
+      where: {email},
+      withDeleted: includeDeleted,
+    });
 
-    const ormEntity = await this.ormRepository.findOne({where: whereClause});
     return ormEntity ? UserMapper.toDomain(ormEntity) : null;
   }
 
