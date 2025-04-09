@@ -1,6 +1,7 @@
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AllExceptionsFilter } from "@shared/common/filters/all-exceptions.filter";
 import helmet from "helmet";
 import { AppModule } from './app.module';
@@ -49,6 +50,36 @@ async function bootstrap() {
       enableImplicitConversion: true,
     },
   }));
+
+  // --- Configuration de Swagger ---
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('ZC SaaS Boilerplate API')
+    .setDescription('API Documentation for the ZC SaaS Boilerplate application')
+    .setVersion('1.0')
+    // Ajouter des tags pour organiser les endpoints (optionnel mais recommandé)
+    .addTag('Auth', 'Authentication related endpoints')
+    .addTag('Users', 'User management endpoints')
+    // Configurer l'authentification Bearer (JWT) pour Swagger UI
+    .addBearerAuth(
+      {
+        // I typically use Bearer (JWT) scheme
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'access-token', // Le nom utilisé pour référencer cette sécurité (ex: dans @ApiBearerAuth())
+    )
+    .build(); // Construire l'objet de configuration
+
+  // Créer le document OpenAPI basé sur l'application et la configuration
+  const document = SwaggerModule.createDocument(app, swaggerConfig);
+
+  // Mettre en place le serveur Swagger UI sur un chemin spécifique
+  const swaggerPath = 'api-docs'; // Chemin d'accès (ex: /api-docs)
+  SwaggerModule.setup(swaggerPath, app, document);
 
   // Add "/api" before all routes
   app.setGlobalPrefix('api');
