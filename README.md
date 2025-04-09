@@ -11,9 +11,10 @@ et inclut des fonctionnalités communes prêtes à l'emploi ou facilement extens
 
 ## ✨ Fonctionnalités Principales
 
-*   **Fondation NestJS :** Utilise le framework Node.js moderne et puissant NestJS.
-*   **TypeScript :** Typage statique pour une meilleure maintenabilité et productivité.
-*   **Clean Architecture :** Structure de projet organisée (Domain, Application, Infrastructure, Presentation) pour une séparation claire des préoccupations.
+* **Fondation NestJS :** Utilise le framework Node.js moderne et puissant NestJS.
+* **TypeScript :** Typage statique pour une meilleure maintenabilité et productivité.
+* **Clean Architecture :** Structure de projet organisée (Domain, Application, Infrastructure, Presentation) pour une
+  séparation claire des préoccupations.
 * **Gestion de la Configuration :** Intégration de `@nestjs/config` avec support des fichiers `.env` (via `.env.dist`
   comme template) et validation optionnelle.
 * **Base de Données (TypeORM & PostgreSQL) :** Intégration de TypeORM avec PostgreSQL, configuration pour la CLI et les
@@ -26,30 +27,32 @@ et inclut des fonctionnalités communes prêtes à l'emploi ou facilement extens
 * **Gestion Globale des Erreurs :** (Prévu) Filtre d'exception HTTP personnalisé pour des réponses d'erreur cohérentes.
 * **Sécurité de Base :** (Prévu) Configuration de `Helmet`, `CORS`, et `Throttler`.
 * **Documentation API (Swagger) :** (Prévu) Intégration de `@nestjs/swagger` pour une documentation API auto-générée.
-*   **Outillage (Linting & Formatting) :** Configuration d'ESLint et Prettier pour un code propre et cohérent.
+* **Outillage (Linting & Formatting) :** Configuration d'ESLint et Prettier pour un code propre et cohérent.
 * **Dockerisation :** `Dockerfile` multi-étapes (Dev/Prod) et `docker-compose.yml`/`docker-compose.override.yml` pour un
   environnement de développement complet et cohérent (App + DB PostgreSQL).
 * **Tests :** (Prévu) Structure de base pour les tests unitaires et E2E avec Jest.
-*   **(Prévu) Concepts SaaS :** Structure prête à accueillir des modules pour les Organisations, Membres, Abonnements, Invitations, etc.
+* **(Prévu) Concepts SaaS :** Structure prête à accueillir des modules pour les Organisations, Membres, Abonnements,
+  Invitations, etc.
 
 ## 🚀 Technologie
 
 * **Framework :** [NestJS](https://nestjs.com/) (^10.0.0)
 * **Langage :** [TypeScript](https://www.typescriptlang.org/) (^5.1.3)
 * **Gestionnaire de Paquets :** [pnpm](https://pnpm.io/fr/)
-*   **ORM :** [TypeORM](https://typeorm.io/)
+* **ORM :** [TypeORM](https://typeorm.io/)
 * **Base de Données :** [PostgreSQL](https://www.postgresql.org/) (Image Docker `postgres:15-alpine`)
 * **Authentification :** (Prévu) [PassportJS](http://www.passportjs.org/), `@nestjs/jwt`, `bcrypt`
 * **Validation :** (Prévu) `class-validator`, `class-transformer`
-*   **Configuration :** `@nestjs/config`
+* **Configuration :** `@nestjs/config`
 * **Tests :** (Prévu) [Jest](https://jestjs.io/)
 * **API Docs :** (Prévu) `@nestjs/swagger`
-*   **Conteneurisation :** [Docker](https://www.docker.com/), Docker Compose
-*   **Linting/Formatting :** [ESLint](https://eslint.org/), [Prettier](https://prettier.io/)
+* **Conteneurisation :** [Docker](https://www.docker.com/), Docker Compose
+* **Linting/Formatting :** [ESLint](https://eslint.org/), [Prettier](https://prettier.io/)
 
 ## 🏛️ Architecture
 
-Ce projet suit les principes de la **Clean Architecture** pour séparer les différentes couches logiques de l'application :
+Ce projet suit les principes de la **Clean Architecture** pour séparer les différentes couches logiques de
+l'application :
 
 1. **Domain :** Contient la logique métier principale, les entités de domaine et les interfaces des dépôts. N'a aucune
    dépendance externe.
@@ -71,17 +74,17 @@ L'environnement de développement principal est géré par Docker Compose.
 
 * [Node.js](https://nodejs.org/) (Version LTS v20.12.0 ou supérieure - principalement pour `pnpm`)
 * [pnpm](https://pnpm.io/fr/installation)
-*   [Git](https://git-scm.com/)
+* [Git](https://git-scm.com/)
 * [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)
 
 ### Installation
 
-1.  **Cloner (ou Forker) le dépôt :**
-    ```bash
-    git clone https://github.com/zohac/zc-saas-boilerplate.git
-    cd zc-saas-boilerplate
-    ```
-    *(Voir la section "Utiliser ce Boilerplate" pour l'approche avec Fork + Upstream)*
+1. **Cloner (ou Forker) le dépôt :**
+   ```bash
+   git clone https://github.com/zohac/zc-saas-boilerplate.git
+   cd zc-saas-boilerplate
+   ```
+   *(Voir la section "Utiliser ce Boilerplate" pour l'approche avec Fork + Upstream)*
 
 2. **Installer les dépendances (pour l'outillage local comme ESLint/Prettier) :**
    *Bien que l'application tourne dans Docker, `pnpm install` localement est utile pour les outils de dev.*
@@ -91,34 +94,34 @@ L'environnement de développement principal est géré par Docker Compose.
 
 ### Configuration
 
-1.  **Créer le fichier d'environnement :**
-    Copiez le fichier d'exemple `.env.dist` vers `.env`. Ce fichier est ignoré par Git.
-    ```bash
-    cp .env.dist .env
-    ```
+1. **Créer le fichier d'environnement :**
+   Copiez le fichier d'exemple `.env.dist` vers `.env`. Ce fichier est ignoré par Git.
+   ```bash
+   cp .env.dist .env
+   ```
 
-2.  **Configurer les variables d'environnement :**
-    Ouvrez le fichier `.env` et modifiez les valeurs. **Important pour Docker :**
+2. **Configurer les variables d'environnement :**
+   Ouvrez le fichier `.env` et modifiez les valeurs. **Important pour Docker :**
     * `DB_HOST=db` (ou le nom du service DB dans `docker-compose.yml`)
     * Renseignez `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE` (ces valeurs seront utilisées pour créer la base de données
       dans le conteneur Docker).
     * Configurez `JWT_SECRET` avec une clé forte.
     * Ajustez `PORT` si nécessaire (ex: `PORT=3001` si 3000 est déjà pris).
 
-    ```dotenv
-    # .env (Exemple après copie et modification)
-    NODE_ENV=development
-    PORT=3000
+   ```dotenv
+   # .env (Exemple après copie et modification)
+   NODE_ENV=development
+   PORT=3000
 
-    DB_HOST=db
-    DB_PORT=5432
-    DB_USERNAME=saas_user
-    DB_PASSWORD=super_secret_password
-    DB_DATABASE=saas_db
+   DB_HOST=db
+   DB_PORT=5432
+   DB_USERNAME=saas_user
+   DB_PASSWORD=super_secret_password
+   DB_DATABASE=saas_db
 
-    JWT_SECRET=generate_a_very_strong_secret_here
-    JWT_EXPIRATION_TIME=3600s
-    ```
+   JWT_SECRET=generate_a_very_strong_secret_here
+   JWT_EXPIRATION_TIME=3600s
+   ```
 
 ### Lancement et Opérations Courantes (via Docker Compose)
 
@@ -179,15 +182,15 @@ L'environnement de développement principal est géré par Docker Compose.
     ```
   *Le fichier sera créé dans `src/database/migrations` sur votre machine hôte (via le volume monté).*
 
-*   **Exécuter les migrations en attente :**
-    ```bash
-    docker compose exec api pnpm run migration:run
-    ```
+* **Exécuter les migrations en attente :**
+  ```bash
+  docker compose exec api pnpm run migration:run
+  ```
 
-*   **Annuler la dernière migration exécutée :**
-    ```bash
-    docker compose exec api pnpm run migration:revert
-    ```
+* **Annuler la dernière migration exécutée :**
+  ```bash
+  docker compose exec api pnpm run migration:revert
+  ```
 
 * **Voir le statut des migrations :**
   ```bash
@@ -196,16 +199,16 @@ L'environnement de développement principal est géré par Docker Compose.
 
 ### Tests (Commandes Docker)
 
-*   **Exécuter tous les tests unitaires :**
-    ```bash
-    docker compose exec api pnpm run test
-    ```
+* **Exécuter tous les tests unitaires :**
+  ```bash
+  docker compose exec api pnpm run test
+  ```
 
-*   **Exécuter tous les tests End-to-End (E2E) :**
-    *(Nécessite que les conteneurs `api` et `db` soient démarrés).*
-    ```bash
-    docker compose exec api pnpm run test:e2e
-    ```
+* **Exécuter tous les tests End-to-End (E2E) :**
+  *(Nécessite que les conteneurs `api` et `db` soient démarrés).*
+  ```bash
+  docker compose exec api pnpm run test:e2e
+  ```
 
 * **Exécuter les tests unitaires avec couverture :**
     ```bash
@@ -217,15 +220,15 @@ L'environnement de développement principal est géré par Docker Compose.
 Ces commandes peuvent être exécutées localement car elles agissent sur les fichiers sources sur votre machine hôte (
 assurez-vous d'avoir fait `pnpm install` localement).
 
-*   **Vérifier les erreurs de linting :**
-    ```bash
-    pnpm run lint
-    ```
+* **Vérifier les erreurs de linting :**
+  ```bash
+  pnpm run lint
+  ```
 
-*   **Formater le code avec Prettier :**
-    ```bash
-    pnpm run format
-    ```
+* **Formater le code avec Prettier :**
+  ```bash
+  pnpm run format
+  ```
 
 ### Documentation API (Swagger)
 
@@ -234,6 +237,7 @@ Une fois l'application lancée, la documentation Swagger UI sera typiquement dis
 `http://localhost:PORT/api` (ex: `http://localhost:3000/api`)
 
 ## 🏗️ Structure du Projet (Aperçu)
+
 ```bash
 zc-saas-boilerplate/
 ├── dist/ # Code compilé (utilisé en prod et pour l'exécution)
@@ -265,7 +269,6 @@ zc-saas-boilerplate/
 ├── tsconfig.build.json
 └── tsconfig.json
 ```
-
 
 ## 🔑 Modules Clés (Implémentés / Prévus)
 

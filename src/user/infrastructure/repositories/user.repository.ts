@@ -27,7 +27,7 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     const ormEntity = await this.ormRepository.findOne({
-      where: { id: id, deletedAt: undefined }, // Exclut les soft-deleted par défaut
+      where: { id: id, deletedAt: undefined },
     });
     return ormEntity ? UserMapper.toDomain(ormEntity) : null;
   }

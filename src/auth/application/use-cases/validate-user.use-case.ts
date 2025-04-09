@@ -4,19 +4,19 @@ import { Inject, Injectable } from '@nestjs/common';
 import {
   IPasswordHasher,
   PASSWORD_HASHER,
-} from '@user/application/ports/password-hasher.interface'; // Import Hasher interface & token
-import { User } from '@user/domain/user'; // Import User domain entity
+} from '@user/application/ports/password-hasher.interface';
+import { User } from '@user/domain/user';
 import {
   IUserRepository,
   USER_REPOSITORY,
-} from '@user/domain/user.repository.interface'; // Import User repo interface & token
+} from '@user/domain/user.repository.interface';
 
 @Injectable()
 export class ValidateUserUseCase {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
-    @Inject(PASSWORD_HASHER) // Inject the hasher implementation provided by UserModule/Shared
+    @Inject(PASSWORD_HASHER)
     private readonly passwordHasher: IPasswordHasher,
   ) {}
 

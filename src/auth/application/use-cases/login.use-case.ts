@@ -1,7 +1,8 @@
 // src/auth/application/use-cases/login.use-case.ts
 import { Inject, Injectable } from '@nestjs/common';
 
-import { User } from '@user/domain/user'; // Import User type
+import { User } from '@user/domain/user';
+
 import { IJwtService, JWT_SERVICE } from '../ports/jwt-service.interface';
 
 // Interface simple pour la réponse du login

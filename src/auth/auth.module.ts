@@ -29,7 +29,7 @@ import { AuthController } from './presentation/controllers/auth.controller';
     //    Crucial for using @nestjs/jwt service and configuring it with .env variables.
     JwtModule.registerAsync({
       imports: [ConfigModule], // Make ConfigService available in the factory
-      useFactory: async (configService: ConfigService) => {
+      useFactory: (configService: ConfigService) => {
         const secret = configService.get<string>('JWT_SECRET');
         const expiresIn = configService.get<string>('JWT_EXPIRATION_TIME');
         if (!secret) {

@@ -7,11 +7,11 @@ import {
   USER_REPOSITORY,
 } from '../../domain/user.repository.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { ID_GENERATOR, IIdGenerator } from '../ports/id-generator.interface'; // <-- Importer Port + Token
+import { ID_GENERATOR, IIdGenerator } from '../ports/id-generator.interface';
 import {
   IPasswordHasher,
   PASSWORD_HASHER,
-} from '../ports/password-hasher.interface'; // <-- Importer Port + Token
+} from '../ports/password-hasher.interface';
 
 @Injectable()
 export class CreateUserUseCase {

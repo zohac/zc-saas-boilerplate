@@ -1,6 +1,6 @@
 // src/shared/infrastructure/database/data-source.ts
 
-import 'dotenv/config'; // Charge les variables .env directement au chargement du fichier
+import 'dotenv/config';
 import * as path from 'path';
 
 import { DataSource, DataSourceOptions } from 'typeorm';

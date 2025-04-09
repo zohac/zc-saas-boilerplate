@@ -1,7 +1,7 @@
 // src/shared/infrastructure/services/bcrypt.service.ts
 import { Injectable } from '@nestjs/common';
 
-import { IPasswordHasher } from '@user/application/ports/password-hasher.interface'; // Ajustez le chemin si besoin
+import { IPasswordHasher } from '@user/application/ports/password-hasher.interface';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()

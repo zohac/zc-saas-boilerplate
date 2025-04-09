@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService as NestJwtService } from '@nestjs/jwt';
 
-// Importer l'interface et le type de payload
 import {
   BaseJwtPayload,
   IJwtService,

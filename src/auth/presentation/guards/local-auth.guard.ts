@@ -7,5 +7,4 @@ import { AuthGuard } from '@nestjs/passport';
  * It triggers the validate method in LocalStrategy.
  */
 @Injectable()
-export class LocalAuthGuard extends AuthGuard('local') {
-} // 'local' references the LocalStrategy
+export class LocalAuthGuard extends AuthGuard('local') {} // 'local' references the LocalStrategy

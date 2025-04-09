@@ -16,10 +16,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserDto } from '@user/application/dto/user.dto'; // Import UserDto for response
-import { User } from '@user/domain/user'; // Import User domain type
-import { Request } from 'express'; // Import Request type from express
-import { LoginDto } from '../../application/dto/login.dto'; // Import LoginDto for type safety although not directly used in @Body here
+
+import { UserDto } from '@user/application/dto/user.dto';
+import { User } from '@user/domain/user';
+import { Request } from 'express';
+
+import { LoginDto } from '../../application/dto/login.dto';
 import {
   LoginResponse,
   LoginUseCase,
@@ -79,8 +81,8 @@ export class AuthController {
    * @param req The Express request object, augmented with the user property by Passport.
    */
   @Get('profile')
-  @UseGuards(JwtAuthGuard) // Apply the JWT Authentication Guard
-  @ApiBearerAuth('access-token') // <-- Indique que cette route nécessite le token Bearer
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get current logged-in user profile' })
   @ApiResponse({
     status: 200,

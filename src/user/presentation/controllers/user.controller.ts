@@ -26,12 +26,12 @@ import {
 
 import { CreateUserDto } from '../../application/dto/create-user.dto';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
-import { UserDto } from '../../application/dto/user.dto'; // DTO de sortie
+import { UserDto } from '../../application/dto/user.dto';
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
 import { DeleteUserUseCase } from '../../application/use-cases/delete-user.use-case';
 import { FindUserByIdUseCase } from '../../application/use-cases/find-user-by-id.use-case';
 import { UpdateUserUseCase } from '../../application/use-cases/update-user.use-case';
-import { User } from '../../domain/user'; // Import de l'entité domaine pour le mapping
+import { User } from '../../domain/user';
 
 @ApiTags('Users')
 @Controller('users') // Définit le préfixe de route pour ce contrôleur

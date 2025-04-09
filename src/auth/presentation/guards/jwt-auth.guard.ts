@@ -7,5 +7,4 @@ import { AuthGuard } from '@nestjs/passport';
  * It triggers the validate method in JwtStrategy after verifying token signature/expiration.
  */
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-} // 'jwt' references the JwtStrategy
+export class JwtAuthGuard extends AuthGuard('jwt') {} // 'jwt' references the JwtStrategy

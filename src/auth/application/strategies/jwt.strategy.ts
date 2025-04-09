@@ -87,7 +87,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     // Éviter de retourner des informations sensibles comme le hash du mot de passe.
     const {
       passwordHash: _passwordHash,
-
       deletedAt: _deletedAt,
       ...secureUser
     } = user;
