@@ -81,9 +81,8 @@ export class User {
   constructor(props: Partial<User>) {
     Object.assign(this, props);
     // Ensure defaults if necessary (e.g., isActive might default to true or false)
-    if (this.isActive === undefined) {
-      this.isActive = true; // Example default
-    }
+    this.isActive ??= true;
+
     // Ensure dates are Date objects if created from plain objects
     if (props.createdAt && typeof props.createdAt === 'string') {
       this.createdAt = new Date(props.createdAt);

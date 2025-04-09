@@ -1,10 +1,10 @@
-import { AuthModule } from "@auth/auth.module";
+import { AuthModule } from '@auth/auth.module';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { APP_GUARD } from "@nestjs/core";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { UserModule } from "@user/user.module";
+import { UserModule } from '@user/user.module';
 
 @Module({
   imports: [
@@ -22,8 +22,8 @@ import { UserModule } from "@user/user.module";
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         // 1. Lire les valeurs (qui peuvent être string ou undefined)
-        const ttlFromEnv = configService.get('THROTTLE_TTL'); // Lire sans forcer le type <number>
-        const limitFromEnv = configService.get('THROTTLE_LIMIT');
+        const ttlFromEnv = configService.get<string>('THROTTLE_TTL');
+        const limitFromEnv = configService.get<string>('THROTTLE_LIMIT');
 
         // 2. Convertir en nombre, avec des valeurs par défaut numériques claires
         // Utiliser parseInt avec une base de 10. Si NaN, utiliser le défaut.
@@ -34,12 +34,12 @@ import { UserModule } from "@user/user.module";
         const finalTtl = !isNaN(ttl) && ttl > 0 ? ttl : 60000; // Reprendre le défaut si la conversion échoue
         const finalLimit = !isNaN(limit) && limit > 0 ? limit : 10; // Reprendre le défaut si la conversion échoue
 
-        console.log(`Throttler Config: TTL=${finalTtl}ms, Limit=${finalLimit} reqs (Read from env: ttl='${ttlFromEnv}', limit='${limitFromEnv}')`);
-
-        return [{ // Retourner la config dans un tableau
-          ttl: finalTtl,
-          limit: finalLimit,
-        }];
+        return [
+          {
+            ttl: finalTtl,
+            limit: finalLimit,
+          },
+        ];
       },
     }),
     // ThrottlerModule.forRoot({
@@ -53,8 +53,11 @@ import { UserModule } from "@user/user.module";
       imports: [ConfigModule],
       // La factory qui crée la configuration TypeORM
       useFactory: (configService: ConfigService): TypeOrmModuleOptions => {
-        const isDevelopment = configService.get<string>('NODE_ENV') === 'development';
-        console.log(`Connecting to DB: host=${configService.get<string>('DB_HOST')} port=${configService.get<number>('DB_PORT')} dbname=${configService.get<string>('DB_DATABASE')}`); // Log de débogage
+        const isDevelopment =
+          configService.get<string>('NODE_ENV') === 'development';
+        console.log(
+          `Connecting to DB: host=${configService.get<string>('DB_HOST')} port=${configService.get<number>('DB_PORT')} dbname=${configService.get<string>('DB_DATABASE')}`,
+        ); // Log de débogage
 
         return {
           type: 'postgres', // Type de base de données

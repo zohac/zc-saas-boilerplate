@@ -1,122 +1,168 @@
 // src/shared/common/filters/all-exceptions.filter.ts
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger, } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpStatus,
+  Logger,
+} from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
-import { QueryFailedError } from 'typeorm'; // Importer l'erreur spécifique
+import { Request, Response } from 'express'; // Importer les types Express
+import { QueryFailedError } from 'typeorm';
 
-@Catch() // Capture TOUTES les exceptions non interceptées par des filtres plus spécifiques
+// Interface pour la structure de la réponse d'erreur
+interface ErrorResponseBody {
+  statusCode: number;
+  timestamp: string;
+  path: string;
+  method: string;
+  message: string;
+  errorDetails?: unknown; // Garder les détails optionnels pour les erreurs de validation etc.
+}
+
+// Interface pour typer les erreurs PostgreSQL (simplifié)
+interface PostgresError extends Error {
+  code?: string;
+  detail?: string;
+  // Ajoutez d'autres champs si nécessaire (schema, table, constraint...)
+}
+
+@Catch() // Capture toutes les exceptions
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger(AllExceptionsFilter.name); // Initialiser un logger
+  // Logger NestJS pour ce filtre
+  private readonly logger = new Logger(AllExceptionsFilter.name);
 
-  // Injecter HttpAdapterHost pour interagir avec la plateforme HTTP sous-jacente
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {
-  }
+  // Injecter HttpAdapterHost pour pouvoir répondre indépendamment de la plateforme (Express/Fastify)
+  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
-    const {httpAdapter} = this.httpAdapterHost;
-    const ctx = host.switchToHttp();
-    const request = ctx.getRequest();
-    const response = ctx.getResponse();
+    const { httpAdapter } = this.httpAdapterHost; // Obtenir l'adapter HTTP actuel
+    const ctx = host.switchToHttp(); // Obtenir le contexte HTTP
+    const request = ctx.getRequest<Request>(); // Obtenir l'objet Request (typé Express)
+    const response = ctx.getResponse<Response>(); // Obtenir l'objet Response (typé Express)
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'An unexpected error occurred';
-    let responseBody: Record<string, any>; // Structure de la réponse
+    // Valeurs par défaut pour le statut et le message
+    let status: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'An unexpected internal error occurred.';
 
-    // Log de l'exception brute pour le débogage
-    this.logger.error(`Caught exception:`, exception);
-    if (exception instanceof Error) {
-      this.logger.error(`Stack trace: ${exception.stack}`);
-    }
+    let logDetails: unknown = exception; // Variable pour stocker les détails spécifiques à loguer
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    let responseDetails: unknown | undefined = undefined; // Variable pour les détails à inclure dans la réponse JSON
 
-
-    // --- Gérer les HttpException (erreurs HTTP standard de NestJS) ---
+    // --- Gestion des HttpException ---
     if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      const errorResponse = exception.getResponse();
-      message =
-        typeof errorResponse === 'string'
-          ? errorResponse
-          : (errorResponse as any)?.message || exception.message; // Tente de prendre le message structuré
+      status = exception.getStatus(); // Obtenir le statut HTTP de l'exception
+      const errorResponse = exception.getResponse(); // Obtenir la réponse de l'exception (string ou object)
+      logDetails = errorResponse; // Loguer la réponse brute de l'exception
 
-      // Utiliser la structure de réponse standard pour HttpException
-      responseBody = {
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: httpAdapter.getRequestUrl(request),
-        method: httpAdapter.getRequestMethod(request),
-        message: message,
-        // On peut ajouter l'erreur originale si c'est un objet (utile pour les erreurs de validation)
-        ...(typeof errorResponse === 'object' && errorResponse !== null && {errorDetails: errorResponse}),
+      // Essayer d'extraire un message significatif
+      if (typeof errorResponse === 'string') {
+        message = errorResponse;
+      } else if (
+        typeof errorResponse === 'object' &&
+        errorResponse !== null &&
+        'message' in errorResponse // Vérifier si l'objet a une propriété 'message'
+      ) {
+        const msg = (errorResponse as { message: unknown }).message;
+        // Utiliser le message de l'objet s'il est string, sinon fallback au message de l'exception parente
+        message = typeof msg === 'string' ? msg : exception.message;
+        // Si la réponse est un objet, on l'inclut dans les détails de la réponse client (utile pour les erreurs de validation)
+        responseDetails = errorResponse;
+      } else {
+        message = exception.message; // Fallback final
+      }
+
+      // Logguer comme un avertissement car c'est une erreur HTTP "attendue"
+      this.logger.warn(
+        `[${AllExceptionsFilter.name}] HTTP Exception [${status}] on ${request.method} ${request.url}: ${message}`,
+        JSON.stringify(logDetails),
+      );
+
+      // --- Gestion des QueryFailedError (Erreurs TypeORM/BDD) ---
+    } else if (exception instanceof QueryFailedError) {
+      // Tenter de caster l'erreur driver en PostgresError pour accéder aux codes spécifiques
+      const pgError = exception.driverError as PostgresError;
+      const driverErrorCode = pgError?.code; // Code erreur PG (ex: '23505')
+      const driverErrorDetail = pgError?.detail; // Détail PG (ex: Key (...) already exists)
+
+      // Préparer les détails pour le log serveur (plus d'infos que pour le client)
+      logDetails = {
+        code: driverErrorCode,
+        detail: driverErrorDetail,
+        query: exception.query,
+        parameters: exception.parameters, // Attention: peuvent contenir des données sensibles
       };
 
-      this.logger.warn(`HTTP Exception [${status}] on ${request.method} ${request.url}: ${message}`);
-
-      // --- Gérer les QueryFailedError (erreurs spécifiques de TypeORM/BDD) ---
-    } else if (exception instanceof QueryFailedError) {
-      message = 'Database query failed.'; // Message par défaut pour les erreurs BDD
-      const driverErrorCode = (exception as any).code; // Code d'erreur spécifique du driver (ex: PostgreSQL)
-      const driverErrorDetail = (exception as any).detail; // Détail fourni par la BDD
-
-      // Mapper les codes d'erreur BDD courants vers des statuts HTTP pertinents
+      // Mapper les codes PG courants vers des statuts/messages HTTP
       switch (driverErrorCode) {
-        case '23505': // Violation de contrainte unique (PostgreSQL)
+        case '23505': // Unique constraint violation
           status = HttpStatus.CONFLICT; // 409
-          message += 'Resource already exists or conflicts with existing data.';
-          if (driverErrorDetail) { // Tenter d'extraire le détail (ex: quelle clé)
-            message += ` Detail: ${driverErrorDetail}`; // ATTENTION: Ne pas exposer de détails trop techniques en prod
-          }
+          message = 'Resource already exists or conflicts with existing data.';
+          // On pourrait ajouter le détail PG au message client, mais prudence en production
+          // message += driverErrorDetail ? ` Detail: ${driverErrorDetail}` : '';
           break;
-        case '23503': // Violation de clé étrangère (PostgreSQL)
-          status = HttpStatus.BAD_REQUEST; // 400 (souvent une mauvaise référence fournie par le client)
+        case '23503': // Foreign key violation
+          status = HttpStatus.BAD_REQUEST; // 400
           message = 'Invalid reference to another resource.';
           break;
-        // Ajoutez d'autres codes d'erreur pertinents ici (ex: '22P02' pour invalid text representation)
-        // case '22P02':
-        //    status = HttpStatus.BAD_REQUEST;
-        //    message = 'Invalid input data format.';
-        //    break;
+        // case '22P02': // Invalid text representation (ex: mauvais format UUID)
+        //   status = HttpStatus.BAD_REQUEST;
+        //   message = 'Invalid input data format.';
+        //   break;
+        // Ajouter d'autres mappings si nécessaire
         default:
-          status = HttpStatus.INTERNAL_SERVER_ERROR; // Pour les autres erreurs BDD non mappées
-          message = 'An internal database error occurred.';
+          // Pour toutes les autres erreurs BDD non mappées, on reste sur 500
+          status = HttpStatus.INTERNAL_SERVER_ERROR;
+          message = 'A database error occurred.'; // Message plus spécifique que l'erreur interne générale
           break;
       }
 
-      responseBody = {
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: httpAdapter.getRequestUrl(request),
-        method: httpAdapter.getRequestMethod(request),
-        message: message,
-        // Ne PAS exposer l'erreur SQL brute en production, mais loggez-la
-        // errorDetails: { code: driverErrorCode } // Optionnel pour le dev
-      };
-
+      // Logguer comme une erreur serveur grave
       this.logger.error(
-        `Database Query Failed [${status}] on ${request.method} ${request.url}: Code=${driverErrorCode}, Message=${exception.message}`,
-        exception.stack // Logguer la stack trace de l'erreur BDD
+        `[${AllExceptionsFilter.name}] Database Query Failed [${status}] on ${request.method} ${request.url}: Code=${driverErrorCode ?? 'N/A'}, Message=${exception.message}`,
+        logDetails, // Loguer les détails techniques (code, detail, query...)
+        exception.stack, // Inclure la stack trace de l'erreur TypeORM
       );
 
-      // --- Gérer toutes les autres erreurs (non-HTTP, non-QueryFailed) ---
+      // --- Gestion des autres erreurs JS (instanceof Error) ---
+    } else if (exception instanceof Error) {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      message = 'An unexpected internal server error occurred.';
+      logDetails = { name: exception.name, message: exception.message }; // Détails pour le log
+
+      // Logguer l'erreur interne
+      this.logger.error(
+        `[${AllExceptionsFilter.name}] Unhandled Error [${status}] on ${request.method} ${request.url}: ${exception.message}`,
+        logDetails,
+        exception.stack, // Stack trace de l'erreur JS
+      );
+
+      // --- Gérer les cas où ce qui est 'throw' n'est même pas une Error ---
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
-      message = 'An internal server error occurred.';
+      message = 'An unknown internal error occurred.';
+      logDetails = exception; // Logguer la valeur brute qui a été 'throw'
 
-      responseBody = {
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: httpAdapter.getRequestUrl(request),
-        method: httpAdapter.getRequestMethod(request),
-        message: message,
-      };
-
-      // Logguer l'erreur inconnue
+      // Logguer cette erreur très inhabituelle
       this.logger.error(
-        `Unhandled Exception [${status}] on ${request.method} ${request.url}:`,
-        exception,
-        (exception instanceof Error) ? exception.stack : '(No stack trace)'
+        `[${AllExceptionsFilter.name}] Unknown Unhandled Exception [${status}] on ${request.method} ${request.url}:`,
+        logDetails, // Logguer la valeur brute
       );
     }
 
-    // Envoyer la réponse HTTP formatée
+    // --- Construire et envoyer la réponse HTTP ---
+    const responseBody: ErrorResponseBody = {
+      statusCode: status,
+      timestamp: new Date().toISOString(),
+      path: request.url, // Utiliser request.url (typé)
+      method: request.method, // Utiliser request.method (typé)
+      message: message,
+      // Inclure conditionnellement les détails (utile pour erreurs de validation HttpException)
+      ...(responseDetails !== undefined && { errorDetails: responseDetails }),
+    };
+
+    // Utiliser l'adapter pour envoyer la réponse (ignorer l'avertissement d'assignation non sûre ici)
     httpAdapter.reply(response, responseBody, status);
   }
 }

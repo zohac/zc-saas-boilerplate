@@ -1,7 +1,11 @@
 // src/user/application/use-cases/update-user.use-case.ts
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+
 import { User } from '../../domain/user';
-import { IUserRepository, USER_REPOSITORY } from '../../domain/user.repository.interface';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../domain/user.repository.interface';
 import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
@@ -9,8 +13,7 @@ export class UpdateUserUseCase {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
-  ) {
-  }
+  ) {}
 
   /**
    * Executes the use case to update a user's profile information.
@@ -22,7 +25,8 @@ export class UpdateUserUseCase {
   async execute(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     // 1. Find the existing user
     const existingUser = await this.userRepository.findById(id);
-    if (!existingUser || existingUser.deletedAt) { // Also check if soft-deleted
+    if (!existingUser || existingUser.deletedAt) {
+      // Also check if soft-deleted
       throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé.`);
     }
 

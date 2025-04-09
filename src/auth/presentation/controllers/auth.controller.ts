@@ -1,11 +1,29 @@
 // src/auth/presentation/controllers/auth.controller.ts
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards, } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserDto } from '@user/application/dto/user.dto'; // Import UserDto for response
 import { User } from '@user/domain/user'; // Import User domain type
 import { Request } from 'express'; // Import Request type from express
 import { LoginDto } from '../../application/dto/login.dto'; // Import LoginDto for type safety although not directly used in @Body here
-import { LoginResponse, LoginUseCase } from '../../application/use-cases/login.use-case';
+import {
+  LoginResponse,
+  LoginUseCase,
+} from '../../application/use-cases/login.use-case';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 
@@ -21,8 +39,7 @@ export class AuthController {
     // Inject the LoginUseCase
     // No need for @Inject() if LoginUseCase is registered as a standard provider in AuthModule
     private readonly loginUseCase: LoginUseCase,
-  ) {
-  }
+  ) {}
 
   /**
    * Handles user login requests.
@@ -34,16 +51,21 @@ export class AuthController {
    */
   @Post('login')
   @UseGuards(LocalAuthGuard) // Apply the Local Authentication Guard
-  @HttpCode(HttpStatus.OK)   // Return 200 OK on successful login
-  @ApiOperation({summary: 'Log in user and get access token'})
-  @ApiBody({type: LoginDto}) // Décrit le corps attendu
+  @HttpCode(HttpStatus.OK) // Return 200 OK on successful login
+  @ApiOperation({ summary: 'Log in user and get access token' })
+  @ApiBody({ type: LoginDto }) // Décrit le corps attendu
   @ApiResponse({
     status: 200,
     description: 'Login successful',
-    schema: {properties: {accessToken: {type: 'string', example: 'eyJ...'}}}
+    schema: {
+      properties: { accessToken: { type: 'string', example: 'eyJ...' } },
+    },
   }) // Décrit la réponse
-  @ApiResponse({status: 401, description: 'Invalid credentials.'}) // Erreur d'auth
-  async login(@Req() req: RequestWithUser, @Body() _loginDto: LoginDto): Promise<LoginResponse> {
+  @ApiResponse({ status: 401, description: 'Invalid credentials.' }) // Erreur d'auth
+  async login(
+    @Req() req: RequestWithUser,
+    @Body() _loginDto: LoginDto,
+  ): Promise<LoginResponse> {
     // If LocalAuthGuard passes, req.user contains the validated user object (without hash)
     // Pass this user object to the LoginUseCase to get the JWT
     console.log('Login endpoint hit, user validated:', req.user.email); // Debug log
@@ -59,10 +81,18 @@ export class AuthController {
   @Get('profile')
   @UseGuards(JwtAuthGuard) // Apply the JWT Authentication Guard
   @ApiBearerAuth('access-token') // <-- Indique que cette route nécessite le token Bearer
-  @ApiOperation({summary: 'Get current logged-in user profile'})
-  @ApiResponse({status: 200, description: 'User profile retrieved successfully.', type: UserDto}) // Utilise UserDto pour la structure
-  @ApiResponse({status: 401, description: 'Unauthorized (Invalid or missing token).'})
-  getProfile(@Req() req: RequestWithUser): UserDto { // Return UserDto
+  @ApiOperation({ summary: 'Get current logged-in user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile retrieved successfully.',
+    type: UserDto,
+  }) // Utilise UserDto pour la structure
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized (Invalid or missing token).',
+  })
+  getProfile(@Req() req: RequestWithUser): UserDto {
+    // Return UserDto
     // If JwtAuthGuard passes, req.user contains the user object (or payload) returned by JwtStrategy's validate method
     console.log('Profile endpoint hit for user:', req.user.email); // Debug log
     // Map the user object from the request to a safe DTO

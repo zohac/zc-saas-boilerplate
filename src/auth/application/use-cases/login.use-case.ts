@@ -1,5 +1,6 @@
 // src/auth/application/use-cases/login.use-case.ts
 import { Inject, Injectable } from '@nestjs/common';
+
 import { User } from '@user/domain/user'; // Import User type
 import { IJwtService, JWT_SERVICE } from '../ports/jwt-service.interface';
 
@@ -13,8 +14,7 @@ export class LoginUseCase {
   constructor(
     @Inject(JWT_SERVICE) // Inject the JWT Service implementation
     private readonly jwtService: IJwtService,
-  ) {
-  }
+  ) {}
 
   /**
    * Generates a JWT access token for a validated user.

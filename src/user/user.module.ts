@@ -1,25 +1,19 @@
 // src/user/user.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BcryptService } from '../shared/infrastructure/services/bcrypt.service'; // Service partagé
-import { UuidService } from '../shared/infrastructure/services/uuid.service'; // Service partagé
+
+import { BcryptService } from '@shared/infrastructure/services/bcrypt.service'; // Service partagé
+import { UuidService } from '@shared/infrastructure/services/uuid.service'; // Service partagé
 import { ID_GENERATOR } from './application/ports/id-generator.interface';
 import { PASSWORD_HASHER } from './application/ports/password-hasher.interface';
-// Application Components
 import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
 import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case';
 import { FindUserByEmailUseCase } from './application/use-cases/find-user-by-email.use-case';
 import { FindUserByIdUseCase } from './application/use-cases/find-user-by-id.use-case';
 import { UpdateUserUseCase } from './application/use-cases/update-user.use-case';
-
-// Domain/Application Ports & Tokens
 import { USER_REPOSITORY } from './domain/user.repository.interface';
-
-// Infrastructure Components
 import { UserEntity } from './infrastructure/orm-entities/user.entity';
 import { UserRepository } from './infrastructure/repositories/user.repository';
-
-// Presentation Components
 import { UserController } from './presentation/controllers/user.controller';
 
 @Module({
@@ -59,8 +53,8 @@ import { UserController } from './presentation/controllers/user.controller';
 
     // 6. Lier l'interface IIdGenerator à son implémentation concrète.
     {
-      provide: ID_GENERATOR,   // Token d'injection
-      useClass: UuidService,   // Classe d'implémentation (service partagé)
+      provide: ID_GENERATOR, // Token d'injection
+      useClass: UuidService, // Classe d'implémentation (service partagé)
     },
     // L'implémentation elle-même doit aussi être un provider connu
     UuidService,
@@ -92,8 +86,7 @@ import { UserController } from './presentation/controllers/user.controller';
     {
       provide: USER_REPOSITORY,
       useClass: UserRepository,
-    }
+    },
   ],
 })
-export class UserModule {
-}
+export class UserModule {}

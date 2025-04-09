@@ -3,8 +3,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config'; // Import ConfigModule/Service for JwtModule config
 import { JwtModule } from '@nestjs/jwt'; // Import NestJS JWT Module
 import { PassportModule } from '@nestjs/passport';
-import { UserModule } from '@user/user.module'; // Import UserModule to access its exports
 
+import { UserModule } from '@user/user.module'; // Import UserModule to access its exports
 // Application Port & Infrastructure Implementation
 import { JWT_SERVICE } from './application/ports/jwt-service.interface';
 import { JwtStrategy } from './application/strategies/jwt.strategy';
@@ -23,7 +23,7 @@ import { AuthController } from './presentation/controllers/auth.controller';
     UserModule,
 
     // 2. Import PassportModule: Configures Passport basics.
-    PassportModule.register({defaultStrategy: 'jwt'}), // Optional: set default strategy
+    PassportModule.register({ defaultStrategy: 'jwt' }), // Optional: set default strategy
 
     // 3. Configure JwtModule Asynchronously:
     //    Crucial for using @nestjs/jwt service and configuring it with .env variables.
@@ -38,7 +38,7 @@ import { AuthController } from './presentation/controllers/auth.controller';
         }
         return {
           secret: secret,
-          signOptions: {expiresIn: expiresIn || '3600s'}, // Default expiration if not set
+          signOptions: { expiresIn: expiresIn ?? '3600s' }, // Default expiration if not set
         };
       },
       inject: [ConfigService], // Inject ConfigService into the factory
@@ -83,5 +83,4 @@ import { AuthController } from './presentation/controllers/auth.controller';
     JwtModule, // Exporting JwtModule allows injection of @nestjs/jwt's JwtService elsewhere if needed
   ],
 })
-export class AuthModule {
-}
+export class AuthModule {}

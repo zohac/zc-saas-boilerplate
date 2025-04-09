@@ -2,6 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { User } from '../../domain/user';
 import { IUserRepository } from '../../domain/user.repository.interface';
 import { UserMapper } from '../mappers/user.mapper';
@@ -13,8 +14,7 @@ export class UserRepository implements IUserRepository {
     // Injecter le Repository TypeORM pour l'entité UserEntity
     @InjectRepository(UserEntity)
     private readonly ormRepository: Repository<UserEntity>,
-  ) {
-  }
+  ) {}
 
   async save(user: User): Promise<User> {
     // Mapper l'entité domaine vers l'entité ORM
@@ -27,14 +27,17 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     const ormEntity = await this.ormRepository.findOne({
-      where: {id: id, deletedAt: undefined}, // Exclut les soft-deleted par défaut
+      where: { id: id, deletedAt: undefined }, // Exclut les soft-deleted par défaut
     });
     return ormEntity ? UserMapper.toDomain(ormEntity) : null;
   }
 
-  async findByEmail(email: string, includeDeleted = false): Promise<User | null> {
+  async findByEmail(
+    email: string,
+    includeDeleted = false,
+  ): Promise<User | null> {
     const ormEntity = await this.ormRepository.findOne({
-      where: {email},
+      where: { email },
       withDeleted: includeDeleted,
     });
 
@@ -44,7 +47,7 @@ export class UserRepository implements IUserRepository {
   async delete(id: string): Promise<void> {
     // Implémente une suppression HARD delete, bien que notre UseCase utilise save() pour le soft delete.
     // Cette méthode pourrait être utilisée par un admin ou un processus de nettoyage.
-    await this.ormRepository.delete({id});
+    await this.ormRepository.delete({ id });
     // Si on voulait aligner cette méthode sur le soft delete, on ferait:
     // const user = await this.findById(id);
     // if (user) {

@@ -1,12 +1,14 @@
 // src/auth/application/strategies/local.strategy.ts
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+
 import { User } from '@user/domain/user'; // Import User type
 import { Strategy } from 'passport-local';
 import { ValidateUserUseCase } from '../use-cases/validate-user.use-case';
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, 'local') { // Le 2e arg 'local' est le nom par défaut, mais on peut l'expliciter
+export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
+  // Le 2e arg 'local' est le nom par défaut, mais on peut l'expliciter
   constructor(
     // Injecter directement le Use Case
     // Pas besoin de @Inject() ici si ValidateUserUseCase est enregistré comme provider standard dans AuthModule
@@ -29,7 +31,10 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') { // Le 2
    * @returns L'objet utilisateur validé (sans le hash) si l'authentification réussit.
    * @throws UnauthorizedException si l'authentification échoue.
    */
-  async validate(email: string, password: string): Promise<Omit<User, 'passwordHash'>> {
+  async validate(
+    email: string,
+    password: string,
+  ): Promise<Omit<User, 'passwordHash'>> {
     console.log(`LocalStrategy validating user: ${email}`); // Log de débogage
     const user = await this.validateUserUseCase.execute(email, password);
 

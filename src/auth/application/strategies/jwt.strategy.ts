@@ -2,7 +2,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Pour récupérer le secret JWT
 import { PassportStrategy } from '@nestjs/passport';
+
 import { FindUserByIdUseCase } from '@user/application/use-cases/find-user-by-id.use-case'; // Pour vérifier si l'utilisateur existe toujours
+import { User } from '@user/domain/user';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
 // Interface décrivant le payload attendu dans notre JWT
@@ -15,7 +17,8 @@ export interface JwtPayload {
 }
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') { // Le 2e arg 'jwt' est le nom par défaut
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  // Le 2e arg 'jwt' est le nom par défaut
   constructor(
     private readonly configService: ConfigService, // Injecter ConfigService pour le secret
     // Injecter le UseCase pour vérifier si l'utilisateur existe toujours en BDD
@@ -26,7 +29,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') { // Le 2e ar
 
     // Vérification explicite au démarrage
     if (!jwtSecret) {
-      throw new Error('JWT_SECRET environment variable is not defined. Application cannot start.');
+      throw new Error(
+        'JWT_SECRET environment variable is not defined. Application cannot start.',
+      );
     }
 
     super({
@@ -53,7 +58,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') { // Le 2e ar
    * @returns L'objet utilisateur (ou une partie) qui sera attaché à request.user.
    * @throws UnauthorizedException si l'utilisateur n'est plus valide.
    */
-  async validate(payload: JwtPayload): Promise<any> { // Retourne any ici, mais souvent on retourne un objet utilisateur simplifié
+  async validate(
+    payload: JwtPayload,
+  ): Promise<Omit<User, 'passwordHash' | 'deletedAt'>> {
+    // Retourne any ici, mais souvent on retourne un objet utilisateur simplifié
     console.log(`JwtStrategy validating payload for user ID: ${payload.sub}`); // Log de débogage
     // Ici, nous pourrions juste retourner le payload tel quel si nous faisons confiance
     // au contenu du token une fois sa signature validée.
@@ -63,16 +71,26 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') { // Le 2e ar
     // Cela évite qu'un token valide soit utilisé si l'utilisateur a été supprimé/désactivé depuis.
     const user = await this.findUserByIdUseCase.execute(payload.sub);
 
-    if (!user || !user.isActive) {
-      console.log(`JwtStrategy validation failed: User ${payload.sub} not found or inactive.`); // Log de débogage
-      throw new UnauthorizedException("Utilisateur associé au token invalide ou inactif.");
+    if (!user?.isActive) {
+      console.log(
+        `JwtStrategy validation failed: User ${payload.sub} not found or inactive.`,
+      ); // Log de débogage
+      throw new UnauthorizedException(
+        'Utilisateur associé au token invalide ou inactif.',
+      );
     }
-    console.log(`JwtStrategy validation successful for user ID: ${payload.sub}`); // Log de débogage
+    console.log(
+      `JwtStrategy validation successful for user ID: ${payload.sub}`,
+    ); // Log de débogage
 
     // Retourner les informations utilisateur nécessaires pour les requêtes suivantes.
     // Éviter de retourner des informations sensibles comme le hash du mot de passe.
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {passwordHash, deletedAt, ...secureUser} = user;
+    const {
+      passwordHash: _passwordHash,
+
+      deletedAt: _deletedAt,
+      ...secureUser
+    } = user;
     return secureUser; // Attache cet objet à request.user
   }
 }

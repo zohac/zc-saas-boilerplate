@@ -1,8 +1,13 @@
 // src/auth/infrastructure/services/jwt.service.ts
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtService as NestJwtService } from '@nestjs/jwt'; // Alias pour éviter la collision de noms
-import { IJwtService } from '../../application/ports/jwt-service.interface';
+import { JwtService as NestJwtService } from '@nestjs/jwt';
+
+// Importer l'interface et le type de payload
+import {
+  BaseJwtPayload,
+  IJwtService,
+} from '../../application/ports/jwt-service.interface';
 
 @Injectable()
 export class JwtService implements IJwtService {
@@ -10,59 +15,71 @@ export class JwtService implements IJwtService {
   private readonly defaultExpiresIn: string;
 
   constructor(
-    // Injecter le service JWT fourni par @nestjs/jwt
     private readonly nestJwtService: NestJwtService,
-    // Injecter ConfigService pour obtenir les paramètres
     private readonly configService: ConfigService,
   ) {
     const secretFromEnv = this.configService.get<string>('JWT_SECRET');
     if (!secretFromEnv) {
-      // Lever une erreur si manquant
-      throw new Error('JWT_SECRET environment variable is not defined. Application cannot start.');
+      throw new Error(
+        'JWT_SECRET environment variable is not defined. Application cannot start.',
+      );
     }
 
     this.jwtSecret = secretFromEnv;
-
-    // Récupérer l'expiration par défaut (ex: '3600s' ou '1h')
-    this.defaultExpiresIn = this.configService.get<string>('JWT_EXPIRATION_TIME', '3600s'); // Default to 1 hour
+    this.defaultExpiresIn = this.configService.get<string>(
+      'JWT_EXPIRATION_TIME',
+      '3600s',
+    );
   }
 
-  /**
-   * Implémente la signature JWT en utilisant le service @nestjs/jwt.
-   */
-  async sign(payload: Record<string, any>, expiresIn?: string): Promise<string> {
+  async sign(
+    payload: Record<string, unknown>,
+    expiresIn?: string,
+  ): Promise<string> {
     const effectiveExpiresIn = expiresIn ?? this.defaultExpiresIn;
-    console.log(`Signing JWT with payload: ${JSON.stringify(payload)}, expires in: ${effectiveExpiresIn}`); // Debug log
+    console.log(
+      `Signing JWT with payload: ${JSON.stringify(payload)}, expires in: ${effectiveExpiresIn}`,
+    );
 
     try {
       const token = await this.nestJwtService.signAsync(payload, {
-        secret: this.jwtSecret, // Utilise le secret chargé
-        expiresIn: effectiveExpiresIn, // Utilise l'expiration fournie ou la valeur par défaut
+        secret: this.jwtSecret,
+        expiresIn: effectiveExpiresIn,
       });
-      console.log(`Generated Token (first 10 chars): ${token.substring(0, 10)}...`); // Debug log
+      console.log(
+        `Generated Token (first 10 chars): ${token.substring(0, 10)}...`,
+      );
       return token;
     } catch (error) {
-      console.error('Error signing JWT:', error); // Log d'erreur détaillé
-      throw new Error(`Failed to sign JWT: ${error.message}`); // Relancer une erreur plus générique ou spécifique
+      console.error('Error signing JWT:', error);
+      // Vérifier le type de l'erreur pour extraire le message
+      const message =
+        error instanceof Error ? error.message : 'Unknown signing error';
+      throw new Error(`Failed to sign JWT: ${message}`);
     }
   }
 
-  /**
-   * Implémente la vérification JWT en utilisant le service @nestjs/jwt.
-   */
-  async verify(token: string): Promise<Record<string, any>> {
-    console.log(`Verifying JWT (first 10 chars): ${token.substring(0, 10)}...`); // Debug log
+  async verify(token: string): Promise<BaseJwtPayload> {
+    console.log(`Verifying JWT (first 10 chars): ${token.substring(0, 10)}...`);
     try {
-      const payload = await this.nestJwtService.verifyAsync(token, {
-        secret: this.jwtSecret, // Utilise le même secret pour vérifier
-      });
-      console.log(`JWT Verification successful. Payload: ${JSON.stringify(payload)}`); // Debug log
-      return payload;
+      // Spécifier le type attendu avec le générique de verifyAsync
+      const payload = await this.nestJwtService.verifyAsync<BaseJwtPayload>(
+        token,
+        {
+          secret: this.jwtSecret,
+        },
+      );
+      console.log(
+        `JWT Verification successful. Payload: ${JSON.stringify(payload)}`,
+      );
+      return payload; // Le type est maintenant correct
     } catch (error) {
-      console.error(`JWT Verification failed: ${error.message}`); // Log d'erreur détaillé
-      // L'erreur d'origine (ex: TokenExpiredError, JsonWebTokenError) sera relancée
-      // par NestJS et potentiellement interceptée par les gardes ou filtres.
-      throw error; // Relancer l'erreur originale (ex: TokenExpiredError)
+      // Vérifier le type de l'erreur pour le log
+      const message =
+        error instanceof Error ? error.message : 'Unknown verification error';
+      console.error(`JWT Verification failed: ${message}`);
+      // Relancer l'erreur originale
+      throw error;
     }
   }
 }

@@ -1,10 +1,17 @@
 // src/user/application/use-cases/create-user.use-case.ts
 import { ConflictException, Inject, Injectable } from '@nestjs/common';
+
 import { User } from '../../domain/user';
-import { IUserRepository, USER_REPOSITORY } from '../../domain/user.repository.interface';
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../domain/user.repository.interface';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { ID_GENERATOR, IIdGenerator } from '../ports/id-generator.interface'; // <-- Importer Port + Token
-import { IPasswordHasher, PASSWORD_HASHER } from '../ports/password-hasher.interface'; // <-- Importer Port + Token
+import {
+  IPasswordHasher,
+  PASSWORD_HASHER,
+} from '../ports/password-hasher.interface'; // <-- Importer Port + Token
 
 @Injectable()
 export class CreateUserUseCase {
@@ -15,18 +22,24 @@ export class CreateUserUseCase {
     private readonly passwordHasher: IPasswordHasher,
     @Inject(ID_GENERATOR) // <-- Injecter via Token
     private readonly idGenerator: IIdGenerator,
-  ) {
-  }
+  ) {}
 
   async execute(createUserDto: CreateUserDto): Promise<User> {
     // 1. Vérifier si l'utilisateur existe déjà
-    const existingUser = await this.userRepository.findByEmail(createUserDto.email, true);
+    const existingUser = await this.userRepository.findByEmail(
+      createUserDto.email,
+      true,
+    );
     if (existingUser) {
-      throw new ConflictException(`Un utilisateur avec l'email ${createUserDto.email} existe déjà.`);
+      throw new ConflictException(
+        `Un utilisateur avec l'email ${createUserDto.email} existe déjà.`,
+      );
     }
 
     // 2. Hacher le mot de passe via le service abstrait
-    const hashedPassword = await this.passwordHasher.hash(createUserDto.password);
+    const hashedPassword = await this.passwordHasher.hash(
+      createUserDto.password,
+    );
 
     // 3. Générer l'ID via le service abstrait
     const userId = this.idGenerator.generate();

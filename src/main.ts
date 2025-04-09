@@ -1,14 +1,16 @@
-import { ValidationPipe } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { AllExceptionsFilter } from "@shared/common/filters/all-exceptions.filter";
-import helmet from "helmet";
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+import { AllExceptionsFilter } from '@shared/common/filters/all-exceptions.filter';
+import helmet from 'helmet';
+
 import { AppModule } from './app.module';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-// --- Obtenir l'instance HttpAdapterHost ---
+  // --- Obtenir l'instance HttpAdapterHost ---
   const httpAdapterHost = app.get(HttpAdapterHost);
   // --- Récupérer ConfigService (possible car ConfigModule est global) ---
   const configService = app.get(ConfigService);
@@ -42,14 +44,16 @@ async function bootstrap() {
   // }));
 
   // --- Configurations globales ---
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    transform: true,
-    forbidNonWhitelisted: true,
-    transformOptions: {
-      enableImplicitConversion: true,
-    },
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  );
 
   // --- Configuration de Swagger ---
   const swaggerConfig = new DocumentBuilder()
@@ -87,8 +91,11 @@ async function bootstrap() {
   // --- Enregistrer le filtre d'exception global ---
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
 
-  // --- Swagger (sera configuré plus tard) ---
-
   await app.listen(port);
 }
-bootstrap();
+
+// Appel de bootstrap avec gestion d'erreur
+bootstrap().catch((error) => {
+  console.error('Error during application bootstrap:', error);
+  process.exit(1);
+});

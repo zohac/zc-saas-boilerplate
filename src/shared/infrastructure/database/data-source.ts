@@ -2,13 +2,14 @@
 
 import 'dotenv/config'; // Charge les variables .env directement au chargement du fichier
 import * as path from 'path';
+
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 // Configuration de base partagée
 const baseOptions: Partial<DataSourceOptions> = {
   type: 'postgres',
-  host: process.env.DB_HOST || 'localhost', // Utilise process.env car hors contexte NestJS
-  port: parseInt(process.env.DB_PORT || '5432', 10),
+  host: process.env.DB_HOST ?? 'localhost', // Utilise process.env car hors contexte NestJS
+  port: parseInt(process.env.DB_PORT ?? '5432', 10),
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,

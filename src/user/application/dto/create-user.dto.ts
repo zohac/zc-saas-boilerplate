@@ -1,6 +1,13 @@
 // src/user/application/dto/create-user.dto.ts
-import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUrl, MinLength, } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+  MinLength,
+} from 'class-validator';
 
 /**
  * Data Transfer Object for creating a new user.
@@ -12,8 +19,8 @@ export class CreateUserDto {
     example: 'john.doe@example.com',
     required: true, // Déjà défini par IsNotEmpty
   })
-  @IsEmail({}, {message: 'Veuillez fournir une adresse email valide.'})
-  @IsNotEmpty({message: "L'email ne peut pas être vide."})
+  @IsEmail({}, { message: 'Veuillez fournir une adresse email valide.' })
+  @IsNotEmpty({ message: "L'email ne peut pas être vide." })
   email: string;
 
   @ApiProperty({
@@ -23,18 +30,28 @@ export class CreateUserDto {
     required: true,
   })
   @IsString()
-  @IsNotEmpty({message: 'Le mot de passe ne peut pas être vide.'})
-  @MinLength(8, {message: 'Le mot de passe doit contenir au moins 8 caractères.'})
+  @IsNotEmpty({ message: 'Le mot de passe ne peut pas être vide.' })
+  @MinLength(8, {
+    message: 'Le mot de passe doit contenir au moins 8 caractères.',
+  })
   password: string;
 
-  @ApiProperty({description: "User's first name", example: 'John', required: true})
+  @ApiProperty({
+    description: "User's first name",
+    example: 'John',
+    required: true,
+  })
   @IsString()
-  @IsNotEmpty({message: 'Le prénom ne peut pas être vide.'})
+  @IsNotEmpty({ message: 'Le prénom ne peut pas être vide.' })
   givenName: string;
 
-  @ApiProperty({description: "User's last name", example: 'Doe', required: true})
+  @ApiProperty({
+    description: "User's last name",
+    example: 'Doe',
+    required: true,
+  })
   @IsString()
-  @IsNotEmpty({message: 'Le nom de famille ne peut pas être vide.'})
+  @IsNotEmpty({ message: 'Le nom de famille ne peut pas être vide.' })
   familyName: string;
 
   @ApiProperty({
@@ -44,7 +61,9 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsString()
-  @IsNotEmpty({message: 'Le téléphone ne peut être une chaîne vide si fourni.'})
+  @IsNotEmpty({
+    message: 'Le téléphone ne peut être une chaîne vide si fourni.',
+  })
   telephone?: string | null;
 
   @ApiProperty({
@@ -53,7 +72,9 @@ export class CreateUserDto {
     required: false,
   })
   @IsOptional()
-  @IsUrl({}, {message: "Veuillez fournir une URL valide pour l'image."})
-  @IsNotEmpty({message: "L'URL de l'image ne peut être une chaîne vide si fournie."})
+  @IsUrl({}, { message: "Veuillez fournir une URL valide pour l'image." })
+  @IsNotEmpty({
+    message: "L'URL de l'image ne peut être une chaîne vide si fournie.",
+  })
   imageUrl?: string | null;
 }

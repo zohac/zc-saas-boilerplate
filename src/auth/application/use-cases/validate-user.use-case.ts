@@ -1,8 +1,15 @@
 // src/auth/application/use-cases/validate-user.use-case.ts
 import { Inject, Injectable } from '@nestjs/common';
-import { IPasswordHasher, PASSWORD_HASHER } from '@user/application/ports/password-hasher.interface'; // Import Hasher interface & token
+
+import {
+  IPasswordHasher,
+  PASSWORD_HASHER,
+} from '@user/application/ports/password-hasher.interface'; // Import Hasher interface & token
 import { User } from '@user/domain/user'; // Import User domain entity
-import { IUserRepository, USER_REPOSITORY } from '@user/domain/user.repository.interface'; // Import User repo interface & token
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '@user/domain/user.repository.interface'; // Import User repo interface & token
 
 @Injectable()
 export class ValidateUserUseCase {
@@ -11,8 +18,7 @@ export class ValidateUserUseCase {
     private readonly userRepository: IUserRepository,
     @Inject(PASSWORD_HASHER) // Inject the hasher implementation provided by UserModule/Shared
     private readonly passwordHasher: IPasswordHasher,
-  ) {
-  }
+  ) {}
 
   /**
    * Validates user credentials.
@@ -21,7 +27,10 @@ export class ValidateUserUseCase {
    * @param pass The plain text password to validate.
    * @returns The User domain entity if validation succeeds, otherwise null.
    */
-  async execute(email: string, pass: string): Promise<Omit<User, 'passwordHash'> | null> {
+  async execute(
+    email: string,
+    pass: string,
+  ): Promise<Omit<User, 'passwordHash'> | null> {
     const user = await this.userRepository.findByEmail(email);
 
     // Check if user exists and is active (and not soft-deleted)
@@ -37,8 +46,8 @@ export class ValidateUserUseCase {
 
     if (isPasswordMatching) {
       // Passwords match, return user data (excluding the hash for security)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const {passwordHash, ...result} = user; // Destructure to remove passwordHash
+
+      const { passwordHash: _passwordHash, ...result } = user; // Destructure to remove passwordHash
       return result;
     }
 

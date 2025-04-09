@@ -1,14 +1,17 @@
 // src/user/application/use-cases/delete-user.use-case.ts
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { IUserRepository, USER_REPOSITORY } from '../../domain/user.repository.interface';
+
+import {
+  IUserRepository,
+  USER_REPOSITORY,
+} from '../../domain/user.repository.interface';
 
 @Injectable()
 export class DeleteUserUseCase {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
-  ) {
-  }
+  ) {}
 
   /**
    * Executes the use case to soft-delete a user.
@@ -20,8 +23,11 @@ export class DeleteUserUseCase {
   async execute(id: string): Promise<void> {
     // 1. Find the existing user
     const existingUser = await this.userRepository.findById(id);
-    if (!existingUser || existingUser.deletedAt) { // Check if not found OR already deleted
-      throw new NotFoundException(`Utilisateur avec l'ID ${id} non trouvé ou déjà supprimé.`);
+    if (!existingUser || existingUser.deletedAt) {
+      // Check if not found OR already deleted
+      throw new NotFoundException(
+        `Utilisateur avec l'ID ${id} non trouvé ou déjà supprimé.`,
+      );
     }
 
     // 2. Mark as deleted and inactive
