@@ -1,8 +1,10 @@
 import { AuthModule } from "@auth/auth.module";
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { UserModule } from "./user/user.module";
+import { UserModule } from "@user/user.module";
 
 @Module({
   imports: [
@@ -13,6 +15,36 @@ import { UserModule } from "./user/user.module";
       // ignoreEnvFile: false, // Mettre à true si vous voulez UNIQUEMENT utiliser les variables système
       // cache: true, // Active la mise en cache des variables pour de meilleures perfs
     }),
+
+    // Configurer ThrottlerModule
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        // 1. Lire les valeurs (qui peuvent être string ou undefined)
+        const ttlFromEnv = configService.get('THROTTLE_TTL'); // Lire sans forcer le type <number>
+        const limitFromEnv = configService.get('THROTTLE_LIMIT');
+
+        // 2. Convertir en nombre, avec des valeurs par défaut numériques claires
+        // Utiliser parseInt avec une base de 10. Si NaN, utiliser le défaut.
+        const ttl = parseInt(ttlFromEnv ?? '60000', 10); // Défaut 60000 ms (60s)
+        const limit = parseInt(limitFromEnv ?? '10', 10); // Défaut 10
+
+        // Ajouter une vérification pour s'assurer qu'on a bien des nombres valides
+        const finalTtl = !isNaN(ttl) && ttl > 0 ? ttl : 60000; // Reprendre le défaut si la conversion échoue
+        const finalLimit = !isNaN(limit) && limit > 0 ? limit : 10; // Reprendre le défaut si la conversion échoue
+
+        console.log(`Throttler Config: TTL=${finalTtl}ms, Limit=${finalLimit} reqs (Read from env: ttl='${ttlFromEnv}', limit='${limitFromEnv}')`);
+
+        return [{ // Retourner la config dans un tableau
+          ttl: finalTtl,
+          limit: finalLimit,
+        }];
+      },
+    }),
+    // ThrottlerModule.forRoot({
+    //   throttlers: [{ ttl: 60000, limit: 2 }],
+    // }),
 
     // Configuration de TypeOrmModule
     TypeOrmModule.forRootAsync({
@@ -69,6 +101,14 @@ import { UserModule } from "./user/user.module";
     AuthModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    // --- Appliquer ThrottlerGuard globalement via le système DI ---
+    // C'est la manière recommandée par NestJS plutôt que app.useGlobalGuards() dans main.ts
+    // pour permettre l'injection de dépendances dans les guards si nécessaire à l'avenir.
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
